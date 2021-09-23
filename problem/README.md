@@ -23,7 +23,7 @@ Please send me a code or description of the algorithm in PR.
 
 ## Sample Input
 
-N=4,C=3
+N=4, C=3
 
 ```
 4 3
