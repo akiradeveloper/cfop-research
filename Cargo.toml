@@ -1,0 +1,13 @@
+[package]
+name = "cfop-research"
+version = "0.1.0"
+authors = ["Akira Hayakawa <ruby.wktk@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+itertools = "0.10"
+rubikmaster = { git = "https://github.com/akiradeveloper/rubikmaster" }
+
+[[bin]]
+name = "oll-1"
+path = "src/oll-1.rs"
