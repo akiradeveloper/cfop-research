@@ -5,6 +5,8 @@ authors = ["Akira Hayakawa <ruby.wktk@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 itertools = "0.10"
 rubikmaster = { git = "https://github.com/akiradeveloper/rubikmaster" }
 

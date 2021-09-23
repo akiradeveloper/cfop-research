@@ -1,10 +1,12 @@
 use rubikmaster::cfop;
 use rubikmaster::matrix::{of, PermutationMatrix};
 use rubikmaster::{Command, Move::*};
-use std::collections::HashMap;
+
+use std::fs::File;
+use std::io::Write;
 
 const NOTE_TBL: [&str; 15] = [
-    "", "R", "R'", "R2", "F", "F'", "U", "U'", "U2", "L", "L'", "D", "D'", "M'", "M2",
+    "", "R", "R'", "R2", "U", "U'", "U2", "F", "F'", "L", "L'", "D", "D'", "M'", "M2",
 ];
 fn com(m: rubikmaster::Move, rep: i8) -> PermutationMatrix {
     of(Command(m, rep))
@@ -15,11 +17,11 @@ fn main() {
     mov_tbl[1] = com(R, 1);
     mov_tbl[2] = com(R, -1);
     mov_tbl[3] = com(R, 2);
-    mov_tbl[4] = com(F, 1);
-    mov_tbl[5] = com(F, -1);
-    mov_tbl[6] = com(U, 1);
-    mov_tbl[7] = com(U, -1);
-    mov_tbl[8] = com(U, 2);
+    mov_tbl[4] = com(U, 1);
+    mov_tbl[5] = com(U, -1);
+    mov_tbl[6] = com(U, 2);
+    mov_tbl[7] = com(F, 1);
+    mov_tbl[8] = com(F, -1);
     mov_tbl[9] = com(L, 1);
     mov_tbl[10] = com(L, -1);
     mov_tbl[11] = com(D, 1);
@@ -67,4 +69,9 @@ fn main() {
             println!("done: {}, found: {}", done, ans.len());
         }
     }
+
+    let mut file = File::create("out.json").unwrap();
+    let out = serde_json::to_string(&ans).unwrap();
+    write!(file, "{}", out).unwrap();
+    file.flush().unwrap();
 }
