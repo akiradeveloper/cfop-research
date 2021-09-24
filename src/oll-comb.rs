@@ -35,7 +35,7 @@ fn main() {
     }
 
     // M -> Id
-    let mut id = 0;
+    let mut id: u64 = 0;
     let mut h2i = HashMap::new();
     for &k in oll_tbl.keys() {
         id += 1;

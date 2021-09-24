@@ -40,7 +40,7 @@ fn main() {
     mov_tbl[14] = cmd(M, 2);
 
     let mut ans = vec![];
-    let mut done = 0;
+    let mut done: u64 = 0;
     let n = opt.n;
     for (x0, x1, x2, x3, x4, x5, x6, x7, x8) in
         itertools::iproduct!(0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n)
