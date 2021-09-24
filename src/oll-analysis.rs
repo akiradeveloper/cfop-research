@@ -79,7 +79,8 @@ fn main() {
     // [(Id, [Seq])]
     // Highest occurrence first.
     let mut classes = vec![];
-    for (m, list) in oll_tbl {
+    for (m, mut list) in oll_tbl {
+        list.sort_by_key(|x| x.len());
         classes.push((*h2i.get(&m).unwrap(), list));
     }
     classes.sort_by_key(|x| occurences.get(&x.0).unwrap());
