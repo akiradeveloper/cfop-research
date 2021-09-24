@@ -16,7 +16,7 @@ struct Opts {
 const NOTE_TBL: [&str; 15] = [
     "", "R", "R'", "R2", "U", "U'", "U2", "F", "F'", "L", "L'", "D", "D'", "M'", "M2",
 ];
-fn com(m: rubikmaster::Move, rep: i8) -> PermutationMatrix {
+fn cmd(m: rubikmaster::Move, rep: i8) -> PermutationMatrix {
     of(Command(m, rep))
 }
 fn main() {
@@ -24,20 +24,20 @@ fn main() {
 
     let mut mov_tbl = [PermutationMatrix::identity(); 15];
     mov_tbl[0] = PermutationMatrix::identity();
-    mov_tbl[1] = com(R, 1);
-    mov_tbl[2] = com(R, -1);
-    mov_tbl[3] = com(R, 2);
-    mov_tbl[4] = com(U, 1);
-    mov_tbl[5] = com(U, -1);
-    mov_tbl[6] = com(U, 2);
-    mov_tbl[7] = com(F, 1);
-    mov_tbl[8] = com(F, -1);
-    mov_tbl[9] = com(L, 1);
-    mov_tbl[10] = com(L, -1);
-    mov_tbl[11] = com(D, 1);
-    mov_tbl[12] = com(D, -1);
-    mov_tbl[13] = com(M, -1);
-    mov_tbl[14] = com(M, 2);
+    mov_tbl[1] = cmd(R, 1);
+    mov_tbl[2] = cmd(R, -1);
+    mov_tbl[3] = cmd(R, 2);
+    mov_tbl[4] = cmd(U, 1);
+    mov_tbl[5] = cmd(U, -1);
+    mov_tbl[6] = cmd(U, 2);
+    mov_tbl[7] = cmd(F, 1);
+    mov_tbl[8] = cmd(F, -1);
+    mov_tbl[9] = cmd(L, 1);
+    mov_tbl[10] = cmd(L, -1);
+    mov_tbl[11] = cmd(D, 1);
+    mov_tbl[12] = cmd(D, -1);
+    mov_tbl[13] = cmd(M, -1);
+    mov_tbl[14] = cmd(M, 2);
 
     let mut ans = vec![];
     let mut done = 0;
