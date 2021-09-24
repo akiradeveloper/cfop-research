@@ -20,7 +20,7 @@ struct Opts {
     file: String,
 }
 fn parse(s: &str) -> PermutationMatrix {
-    todo!()
+    PermutationMatrix::identity() // TODO
 }
 fn main() {
     let opt = Opts::parse();
@@ -42,7 +42,6 @@ fn main() {
         id += 1;
         h2i.insert(k, id);
     }
-    dbg!(&oll_tbl);
 
     // Perm -> [(Id, Id)]
     let mut perm_comb = HashMap::new();
@@ -71,6 +70,12 @@ fn main() {
         }
     }
 
+    let mut m = 0;
+    for &n in occurences.values() {
+        m += n as usize;
+    }
+    m /= 2;
+
     // [(Id, [Seq])]
     // Highest occurrence first.
     let mut classes = vec![];
@@ -81,6 +86,8 @@ fn main() {
     classes.reverse();
 
     let out = Analysis {
+        n: classes.len(),
+        m,
         classes,
         occurences,
         perms: perm_comb,

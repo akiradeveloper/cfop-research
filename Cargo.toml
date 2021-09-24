@@ -20,5 +20,5 @@ name = "oll-1"
 path = "src/oll-1.rs"
 
 [[bin]]
-name = "oll-comb"
-path = "src/oll-comb.rs"
+name = "oll-analysis"
+path = "src/oll-analysis.rs"

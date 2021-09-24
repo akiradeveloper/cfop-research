@@ -9,7 +9,7 @@ use std::io::Write;
 #[derive(Clap, Debug)]
 #[clap(name = "oll-1")]
 struct Opts {
-    #[clap(short)]
+    #[clap(short, default_value = "5")]
     n: usize,
 }
 
