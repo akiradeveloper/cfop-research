@@ -11,6 +11,10 @@ serde_json = "1.0"
 itertools = "0.10"
 rubikmaster = { git = "https://github.com/akiradeveloper/rubikmaster" }
 
+[lib]
+name = "lib"
+path = "src/lib.rs"
+
 [[bin]]
 name = "oll-1"
 path = "src/oll-1.rs"

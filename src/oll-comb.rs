@@ -1,11 +1,11 @@
-use rubikmaster::cfop;
-use rubikmaster::matrix::{of, PermutationMatrix};
-use rubikmaster::{Command};
+use cfop_research::*;
+use rubikmaster::matrix::PermutationMatrix;
 
 use clap::Clap;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
+use std::io::Write;
 
 const PERMS: [(&str, &str); 2] = [
     ("Ub", "R2U RUR' U'R'U' R'UR'"),
@@ -62,11 +62,11 @@ fn main() {
     }
 
     // Id -> Int
-    let mut occurence = HashMap::new();
+    let mut occurences = HashMap::new();
     for (_, list) in &perm_comb {
         for (a, b) in list {
-            *occurence.entry(a).or_insert(0) += 1;
-            *occurence.entry(b).or_insert(0) += 1;
+            *occurences.entry(a).or_insert(0) += 1;
+            *occurences.entry(b).or_insert(0) += 1;
         }
     }
 
@@ -76,6 +76,12 @@ fn main() {
     for (m, list) in oll_tbl {
         classes.push((h2i.get(&m).unwrap(), list));
     }
-    classes.sort_by_key(|x| occurence.get(&x.0).unwrap());
+    classes.sort_by_key(|x| occurences.get(&x.0).unwrap());
     classes.reverse();
+
+    let out = Analysis {};
+    let mut file = File::create("out.json").unwrap();
+    let out = serde_json::to_string(&out).unwrap();
+    write!(file, "{}", out).unwrap();
+    file.flush().unwrap();
 }
