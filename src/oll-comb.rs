@@ -1,6 +1,6 @@
 use rubikmaster::cfop;
 use rubikmaster::matrix::{of, PermutationMatrix};
-use rubikmaster::{Command, Move::*};
+use rubikmaster::{Command};
 
 use clap::Clap;
 use std::collections::HashMap;
@@ -27,7 +27,7 @@ fn main() {
     let reader = BufReader::new(file);
     let oll: Vec<String> = serde_json::from_reader(reader).unwrap();
 
-    // M -> [str]
+    // M -> [Seq]
     let mut oll_tbl = HashMap::new();
     for s in oll {
         let mat = parse(&s);
@@ -37,7 +37,7 @@ fn main() {
     // M -> Id
     let mut id = 0;
     let mut h2i = HashMap::new();
-    for k in oll_tbl.keys() {
+    for &k in oll_tbl.keys() {
         id += 1;
         h2i.insert(k, id);
     }
@@ -65,12 +65,12 @@ fn main() {
     let mut occurence = HashMap::new();
     for (_, list) in &perm_comb {
         for (a, b) in list {
-            *occurence.entry(h2i.get(&a).unwrap()).or_insert(0) += 1;
-            *occurence.entry(h2i.get(&b).unwrap()).or_insert(0) += 1;
+            *occurence.entry(a).or_insert(0) += 1;
+            *occurence.entry(b).or_insert(0) += 1;
         }
     }
 
-    // [(Id, [str])]
+    // [(Id, [Seq])]
     // Highest occurrence first.
     let mut classes = vec![];
     for (m, list) in oll_tbl {
