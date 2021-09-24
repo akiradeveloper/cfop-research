@@ -1,4 +1,4 @@
-use cfop_research::*;
+use lib::*;
 use rubikmaster::matrix::PermutationMatrix;
 
 use clap::Clap;
@@ -10,6 +10,7 @@ use std::io::Write;
 const PERMS: [(&str, &str); 2] = [
     ("Ub", "R2U RUR' U'R'U' R'UR'"),
     ("Ua", "RU'R URUR U'R'U'R2"),
+    // TODO
 ];
 
 #[derive(Clap, Debug)]
@@ -54,19 +55,19 @@ fn main() {
         for a in oll_tbl.keys() {
             let b = m * a.inv();
             if oll_tbl.contains_key(&b) {
-                ab_pairs.push((h2i.get(&a).unwrap(), h2i.get(&b).unwrap()));
+                ab_pairs.push((*h2i.get(&a).unwrap(), *h2i.get(&b).unwrap()));
             }
         }
 
-        perm_comb.insert(perm_name, ab_pairs);
+        perm_comb.insert(perm_name.to_owned(), ab_pairs);
     }
 
     // Id -> Int
-    let mut occurences = HashMap::new();
+    let mut occurences: HashMap<Id, u64> = HashMap::new();
     for (_, list) in &perm_comb {
         for (a, b) in list {
-            *occurences.entry(a).or_insert(0) += 1;
-            *occurences.entry(b).or_insert(0) += 1;
+            *occurences.entry(*a).or_insert(0) += 1;
+            *occurences.entry(*b).or_insert(0) += 1;
         }
     }
 
@@ -74,13 +75,17 @@ fn main() {
     // Highest occurrence first.
     let mut classes = vec![];
     for (m, list) in oll_tbl {
-        classes.push((h2i.get(&m).unwrap(), list));
+        classes.push((*h2i.get(&m).unwrap(), list));
     }
     classes.sort_by_key(|x| occurences.get(&x.0).unwrap());
     classes.reverse();
 
-    let out = Analysis {};
-    let mut file = File::create("out.json").unwrap();
+    let out = Analysis {
+        classes,
+        occurences,
+        perms: perm_comb,
+    };
+    let mut file = File::create("analysis.json").unwrap();
     let out = serde_json::to_string(&out).unwrap();
     write!(file, "{}", out).unwrap();
     file.flush().unwrap();
