@@ -2,8 +2,16 @@ use rubikmaster::cfop;
 use rubikmaster::matrix::{of, PermutationMatrix};
 use rubikmaster::{Command, Move::*};
 
+use clap::Clap;
 use std::fs::File;
 use std::io::Write;
+
+#[derive(Clap, Debug)]
+#[clap(name = "oll-1")]
+struct Opts {
+    #[clap(short)]
+    n: usize,
+}
 
 const NOTE_TBL: [&str; 15] = [
     "", "R", "R'", "R2", "U", "U'", "U2", "F", "F'", "L", "L'", "D", "D'", "M'", "M2",
@@ -12,6 +20,8 @@ fn com(m: rubikmaster::Move, rep: i8) -> PermutationMatrix {
     of(Command(m, rep))
 }
 fn main() {
+    let opt = Opts::parse();
+
     let mut mov_tbl = [PermutationMatrix::identity(); 15];
     mov_tbl[0] = PermutationMatrix::identity();
     mov_tbl[1] = com(R, 1);
@@ -31,7 +41,7 @@ fn main() {
 
     let mut ans = vec![];
     let mut done = 0;
-    let n = 15;
+    let n = opt.n;
     for (x0, x1, x2, x3, x4, x5, x6, x7, x8) in
         itertools::iproduct!(0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n)
     {
