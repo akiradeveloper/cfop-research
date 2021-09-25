@@ -5,6 +5,7 @@ use rubikmaster::{Command, Move::*};
 use clap::Clap;
 use std::fs::File;
 use std::io::Write;
+use std::collections::HashSet;
 
 #[derive(Clap, Debug)]
 #[clap(name = "oll-1")]
@@ -39,7 +40,9 @@ fn main() {
     mov_tbl[13] = cmd(M, -1);
     mov_tbl[14] = cmd(M, 2);
 
-    let mut ans = vec![];
+    let mut ans = HashSet::new();
+    ans.insert("".to_owned());
+
     let mut done: u64 = 0;
     let n = opt.n;
     for (x0, x1, x2, x3, x4, x5, x6, x7, x8) in
@@ -71,7 +74,7 @@ fn main() {
             s.push_str(NOTE_TBL[x6]);
             s.push_str(NOTE_TBL[x7]);
             s.push_str(NOTE_TBL[x8]);
-            ans.push(s);
+            ans.insert(s);
         }
 
         done += 1;
