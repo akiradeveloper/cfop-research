@@ -14,7 +14,13 @@ struct Opts {
     file: String,
 }
 fn parse(s: &str) -> PermutationMatrix {
-    PermutationMatrix::identity() // TODO
+    let mut m  = PermutationMatrix::identity();
+    let es = rubikmaster::parser::parse(&s).unwrap().1;
+    let cs = rubikmaster::flatten(es);
+    for c in cs {
+        m = rubikmaster::matrix::of(c) * m;
+    }
+    m
 }
 fn main() {
     let opt = Opts::parse();
@@ -84,7 +90,7 @@ fn main() {
         list.sort_by_key(|x| x.len());
         classes.push((*h2i.get(&m).unwrap(), list));
     }
-    classes.sort_by_key(|x| occurences.get(&x.0).unwrap());
+    classes.sort_by_key(|x| occurences.get(&x.0).unwrap_or(&0));
     classes.reverse();
 
     let out = Analysis {
