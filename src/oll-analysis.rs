@@ -7,12 +7,6 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Write;
 
-const PERMS: [(&str, &str); 2] = [
-    ("Ub", "R2U RUR' U'R'U' R'UR'"),
-    ("Ua", "RU'R URUR U'R'U'R2"),
-    // TODO
-];
-
 #[derive(Clap, Debug)]
 #[clap(name = "oll-comb")]
 struct Opts {
@@ -30,6 +24,7 @@ fn main() {
 
     // M -> [Seq]
     let mut oll_tbl = HashMap::new();
+    oll_tbl.insert(PermutationMatrix::identity(), vec!["".to_owned()]);
     for s in oll {
         let mat = parse(&s);
         oll_tbl.entry(mat).or_insert(vec![]).push(s);
@@ -45,7 +40,7 @@ fn main() {
 
     // Perm -> [(Id, Id)]
     let mut perm_comb = HashMap::new();
-    for (perm_name, perm_seq) in PERMS {
+    for (perm_name, perm_seq) in rubikmaster::cfop::PLL_LIST {
         // Find sequence [A,B] to effect M.
         // BA = M
         // B = M(A^1)
@@ -59,6 +54,12 @@ fn main() {
         }
 
         perm_comb.insert(perm_name.to_owned(), ab_pairs);
+    }
+    let mut good_perms = vec![];
+    for (perm_name, perm_seq) in &perm_comb {
+        if perm_seq.len() > 0 {
+            good_perms.push(perm_name.clone())
+        }
     }
 
     // Id -> Int
@@ -89,6 +90,8 @@ fn main() {
     let out = Analysis {
         n: classes.len(),
         m,
+        c: good_perms.len(),
+        good_perms,
         classes,
         occurences,
         perms: perm_comb,
