@@ -69,10 +69,10 @@ fn main() {
         }
     }
 
-    let mut good_perms = vec![];
-    for (perm_name, perm_seq) in &perm_comb {
-        if perm_seq.len() > 0 {
-            good_perms.push(perm_name.clone())
+    let mut good_perms = HashMap::new();
+    for (k, v) in &perm_comb {
+        if v.len() > 0 {
+            good_perms.entry(k.0.to_owned()).or_insert(vec![]).push(k.1);
         }
     }
 
