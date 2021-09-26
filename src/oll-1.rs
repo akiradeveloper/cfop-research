@@ -96,8 +96,21 @@ fn main() {
         xs.push(comb);
 
         let cur_n = xs.len();
-        if cur_n == PAR_N || comb == (n-1,n-1,n-1,n-1,n-1,n-1,n-1,n-1,n-1) {
-            let it: Vec<Option<String>> = xs.into_par_iter().map(|a| func(a)).collect();
+        if cur_n == PAR_N
+            || comb
+                == (
+                    n - 1,
+                    n - 1,
+                    n - 1,
+                    n - 1,
+                    n - 1,
+                    n - 1,
+                    n - 1,
+                    n - 1,
+                    n - 1,
+                )
+        {
+            let it: Vec<_> = xs.into_par_iter().map(|a| func(a)).collect();
             for a in it {
                 if let Some(oll) = a {
                     ans.insert(oll);

@@ -1,12 +1,16 @@
 use lib::*;
-use rubikmaster::{Command, Move};
+use rayon::iter::IntoParallelIterator;
 use rubikmaster::matrix::{of, PermutationMatrix};
+use rubikmaster::{Command, Move};
 
 use clap::Clap;
+use rayon::iter::ParallelIterator;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
 use std::io::Write;
+use std::time::Instant;
+// use rayon::iter::FromParallelIterator;
 
 #[derive(Clap, Debug)]
 #[clap(name = "oll-comb")]
@@ -15,7 +19,7 @@ struct Opts {
     file: String,
 }
 fn parse(s: &str) -> PermutationMatrix {
-    let mut m  = PermutationMatrix::identity();
+    let mut m = PermutationMatrix::identity();
     let es = rubikmaster::parser::parse(&s).unwrap().1;
     let cs = rubikmaster::flatten(es);
     for c in cs {
@@ -28,14 +32,21 @@ fn main() {
     let file = File::open(opt.file).unwrap();
     let reader = BufReader::new(file);
     let oll: Vec<String> = serde_json::from_reader(reader).unwrap();
+    dbg!(oll.len());
 
     // M -> [Seq]
     let mut oll_tbl = HashMap::new();
     oll_tbl.insert(PermutationMatrix::identity(), vec!["".to_owned()]);
-    for s in oll {
-        let mat = parse(&s);
+
+    let s = Instant::now();
+    let oll: Vec<_> = oll.into_par_iter().map(|s| (parse(&s), s)).collect();
+    println!("{:?}", s.elapsed());
+
+    let s = Instant::now();
+    for (mat, s) in oll {
         oll_tbl.entry(mat).or_insert(vec![]).push(s);
     }
+    println!("{:?}", s.elapsed());
 
     // M -> Id
     let mut id: u64 = 0;
@@ -111,7 +122,7 @@ fn main() {
         good_perms,
         classes,
         occurrences,
-        perms: perm_comb.into_iter().map(|(k, v)| { (k.0, k.1, v) }).collect(),
+        perms: perm_comb.into_iter().map(|(k, v)| (k.0, k.1, v)).collect(),
     };
     let mut file = File::create("analysis.json").unwrap();
     let out = serde_json::to_string(&out).unwrap();
