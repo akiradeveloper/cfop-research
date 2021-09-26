@@ -77,19 +77,19 @@ fn main() {
     }
 
     // Id -> Int
-    let mut occurences: HashMap<Id, u64> = HashMap::new();
+    let mut occurrences: HashMap<Id, u64> = HashMap::new();
     for (_, list) in &perm_comb {
         for (a, b) in list {
-            *occurences.entry(*a).or_insert(0) += 1;
-            *occurences.entry(*b).or_insert(0) += 1;
+            *occurrences.entry(*a).or_insert(0) += 1;
+            *occurrences.entry(*b).or_insert(0) += 1;
         }
     }
-
     let mut m = 0;
-    for &n in occurences.values() {
+    for &n in occurrences.values() {
         m += n as usize;
     }
     m /= 2;
+
 
     // [(Id, [Seq])]
     // Highest occurrence first.
@@ -98,7 +98,7 @@ fn main() {
         list.sort_by_key(|x| x.len());
         classes.push((*h2i.get(&m).unwrap(), list));
     }
-    classes.sort_by_key(|x| occurences.get(&x.0).unwrap_or(&0));
+    classes.sort_by_key(|x| occurrences.get(&x.0).unwrap_or(&0));
     classes.reverse();
 
     let out = Analysis {
@@ -107,7 +107,7 @@ fn main() {
         c: good_perms.len(),
         good_perms,
         classes,
-        occurences,
+        occurrences,
         perms: perm_comb.into_iter().map(|(k, v)| { (k.0, k.1, v) }).collect(),
     };
     let mut file = File::create("analysis.json").unwrap();
