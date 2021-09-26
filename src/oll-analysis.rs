@@ -1,5 +1,6 @@
 use lib::*;
 use rayon::iter::IntoParallelIterator;
+use rubikmaster::cfop;
 use rubikmaster::matrix::{of, PermutationMatrix};
 use rubikmaster::{Command, Move};
 
@@ -69,6 +70,7 @@ fn main() {
         for ny in 0..4 {
             let mut ab_pairs = vec![];
             let mk_inv = of(Command(Move::y, ny)) * m_inv;
+            assert!(cfop::oll_solved(&mk_inv));
             let mk = mk_inv.inv();
             for a in oll_tbl.keys() {
                 let b = mk * a.inv();
