@@ -62,7 +62,8 @@ fn main() {
     for (perm_name, perm_seq) in rubikmaster::cfop::PLL_LIST {
         // Math:
         // M M' = Id
-        // Mk (Mk'=y^k M') = Id
+        // Mk (Mk'=y^k M') = y^k Id
+        // Mk = y^k Id (Mk')'
         // BA = Mk
         // B = Mk A'
         let m = parse(perm_seq);
@@ -70,8 +71,7 @@ fn main() {
         for ny in 0..4 {
             let mut ab_pairs = vec![];
             let mk_inv = of(Command(Move::y, ny)) * m_inv;
-            assert!(cfop::oll_solved(&mk_inv));
-            let mk = mk_inv.inv();
+            let mk = of(Command(Move::y, ny)) * mk_inv.inv();
             for a in oll_tbl.keys() {
                 let b = mk * a.inv();
                 if oll_tbl.contains_key(&b) {
