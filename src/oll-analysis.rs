@@ -90,7 +90,6 @@ fn main() {
     }
     m /= 2;
 
-
     // [(Id, [Seq])]
     // Highest occurrence first.
     let mut classes = vec![];
@@ -100,6 +99,10 @@ fn main() {
     }
     classes.sort_by_key(|x| occurrences.get(&x.0).unwrap_or(&0));
     classes.reverse();
+
+    let mut occurrences: Vec<(Id, u64)> = occurrences.into_iter().collect();
+    occurrences.sort_by_key(|x| x.1);
+    occurrences.reverse();
 
     let out = Analysis {
         n: classes.len(),
