@@ -1,5 +1,6 @@
 use lib::*;
-use rubikmaster::matrix::PermutationMatrix;
+use rubikmaster::{Command, Move};
+use rubikmaster::matrix::{of, PermutationMatrix};
 
 use clap::Clap;
 use std::collections::HashMap;
@@ -47,20 +48,27 @@ fn main() {
     // Perm -> [(Id, Id)]
     let mut perm_comb = HashMap::new();
     for (perm_name, perm_seq) in rubikmaster::cfop::PLL_LIST {
-        // Find sequence [A,B] to effect M.
-        // BA = M
-        // B = M(A^1)
-        let mut ab_pairs = vec![];
+        // Math:
+        // M M' = Id
+        // Mk (Mk'=y^k M') = Id
+        // BA = Mk
+        // B = Mk A'
         let m = parse(perm_seq);
-        for a in oll_tbl.keys() {
-            let b = m * a.inv();
-            if oll_tbl.contains_key(&b) {
-                ab_pairs.push((*h2i.get(&a).unwrap(), *h2i.get(&b).unwrap()));
+        let m_inv = m.inv();
+        for ny in 0..4 {
+            let mut ab_pairs = vec![];
+            let mk_inv = of(Command(Move::y, ny)) * m_inv;
+            let mk = mk_inv.inv();
+            for a in oll_tbl.keys() {
+                let b = mk * a.inv();
+                if oll_tbl.contains_key(&b) {
+                    ab_pairs.push((*h2i.get(&a).unwrap(), *h2i.get(&b).unwrap()));
+                }
             }
+            perm_comb.insert((perm_name.to_owned(), ny), ab_pairs);
         }
-
-        perm_comb.insert(perm_name.to_owned(), ab_pairs);
     }
+
     let mut good_perms = vec![];
     for (perm_name, perm_seq) in &perm_comb {
         if perm_seq.len() > 0 {
@@ -100,7 +108,7 @@ fn main() {
         good_perms,
         classes,
         occurences,
-        perms: perm_comb,
+        perms: perm_comb.into_iter().map(|(k, v)| { (k.0, k.1, v) }).collect(),
     };
     let mut file = File::create("analysis.json").unwrap();
     let out = serde_json::to_string(&out).unwrap();
