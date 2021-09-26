@@ -18,7 +18,7 @@ struct Opts {
 
 const PAR_N: usize = 100000;
 const NOTE_TBL: [&str; 15] = [
-    "", "R", "R'", "R2", "U", "U'", "U2", "F", "F'", "L", "L'", "D", "D'", "M'", "M2",
+    "", "R", "R'", "R2", "U", "U'", "U2", "F", "F'", "M'", "M2", "L", "L'", "D", "D'",
 ];
 fn cmd(m: rubikmaster::Move, rep: i8) -> PermutationMatrix {
     of(Command(m, rep))
@@ -36,12 +36,12 @@ fn main() {
     mov_tbl[6] = cmd(U, 2);
     mov_tbl[7] = cmd(F, 1);
     mov_tbl[8] = cmd(F, -1);
-    mov_tbl[9] = cmd(L, 1);
-    mov_tbl[10] = cmd(L, -1);
-    mov_tbl[11] = cmd(D, 1);
-    mov_tbl[12] = cmd(D, -1);
-    mov_tbl[13] = cmd(M, -1);
-    mov_tbl[14] = cmd(M, 2);
+    mov_tbl[9] = cmd(M, -1);
+    mov_tbl[10] = cmd(M, 2);
+    mov_tbl[11] = cmd(L, 1);
+    mov_tbl[12] = cmd(L, -1);
+    mov_tbl[13] = cmd(D, 1);
+    mov_tbl[14] = cmd(D, -1);
 
     let func = |(x0, x1, x2, x3, x4, x5, x6, x7, x8): (
         usize,
