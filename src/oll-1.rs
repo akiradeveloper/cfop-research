@@ -3,9 +3,11 @@ use rubikmaster::matrix::{of, PermutationMatrix};
 use rubikmaster::{Command, Move::*};
 
 use clap::Clap;
+use rayon::iter::IntoParallelIterator;
+use rayon::iter::ParallelIterator;
+use std::collections::HashSet;
 use std::fs::File;
 use std::io::Write;
-use std::collections::HashSet;
 
 #[derive(Clap, Debug)]
 #[clap(name = "oll-1")]
@@ -14,6 +16,7 @@ struct Opts {
     n: usize,
 }
 
+const PAR_N: usize = 100000;
 const NOTE_TBL: [&str; 15] = [
     "", "R", "R'", "R2", "U", "U'", "U2", "F", "F'", "L", "L'", "D", "D'", "M'", "M2",
 ];
@@ -40,14 +43,17 @@ fn main() {
     mov_tbl[13] = cmd(M, -1);
     mov_tbl[14] = cmd(M, 2);
 
-    let mut ans = HashSet::new();
-    ans.insert("".to_owned());
-
-    let mut done: u64 = 0;
-    let n = opt.n;
-    for (x0, x1, x2, x3, x4, x5, x6, x7, x8) in
-        itertools::iproduct!(0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n)
-    {
+    let func = |(x0, x1, x2, x3, x4, x5, x6, x7, x8): (
+        usize,
+        usize,
+        usize,
+        usize,
+        usize,
+        usize,
+        usize,
+        usize,
+        usize,
+    )| {
         let mut m = PermutationMatrix::identity();
         let mut ap = |i| {
             let op = mov_tbl[i];
@@ -74,15 +80,34 @@ fn main() {
             s.push_str(NOTE_TBL[x6]);
             s.push_str(NOTE_TBL[x7]);
             s.push_str(NOTE_TBL[x8]);
-            ans.insert(s);
+            Some(s)
+        } else {
+            None
         }
+    };
 
-        done += 1;
-        if done % 100000 == 0 {
+    let mut ans = HashSet::new();
+    ans.insert("".to_owned());
+
+    let mut done: u64 = 0;
+    let n = opt.n;
+    let mut xs = vec![];
+    for comb in itertools::iproduct!(0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n) {
+        xs.push(comb);
+
+        let cur_n = xs.len();
+        if cur_n == PAR_N || comb == (n-1,n-1,n-1,n-1,n-1,n-1,n-1,n-1,n-1) {
+            let it: Vec<Option<String>> = xs.into_par_iter().map(|a| func(a)).collect();
+            for a in it {
+                if let Some(oll) = a {
+                    ans.insert(oll);
+                }
+            }
+            done += cur_n as u64;
             println!("done: {}, found: {}", done, ans.len());
+            xs = vec![];
         }
     }
-
     let mut file = File::create("out.json").unwrap();
     let out = serde_json::to_string(&ans).unwrap();
     write!(file, "{}", out).unwrap();
