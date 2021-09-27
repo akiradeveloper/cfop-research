@@ -44,7 +44,8 @@ fn main() {
     mov_tbl[13] = cmd(D, 1);
     mov_tbl[14] = cmd(D, -1);
 
-    let func = |(x0, x1, x2, x3, x4, x5, x6, x7, x8): (
+    let func = |(x0, x1, x2, x3, x4, x5, x6, x7, x8, x9): (
+        usize,
         usize,
         usize,
         usize,
@@ -69,6 +70,7 @@ fn main() {
         ap(x6);
         ap(x7);
         ap(x8);
+        ap(x9);
         let ok = cfop::f2l_solved(&m) && !cfop::solved(&m);
         if ok {
             let mut s = String::new();
@@ -81,6 +83,7 @@ fn main() {
             s.push_str(NOTE_TBL[x6]);
             s.push_str(NOTE_TBL[x7]);
             s.push_str(NOTE_TBL[x8]);
+            s.push_str(NOTE_TBL[x9]);
             Some(s)
         } else {
             None
@@ -93,13 +96,14 @@ fn main() {
     let mut done: u64 = 0;
     let n = opt.n;
     let mut xs = vec![];
-    for comb in itertools::iproduct!(0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n) {
+    for comb in itertools::iproduct!(0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n) {
         xs.push(comb);
 
         let cur_n = xs.len();
         if cur_n == PAR_N
             || comb
                 == (
+                    n - 1,
                     n - 1,
                     n - 1,
                     n - 1,
