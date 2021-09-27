@@ -1,0 +1,21 @@
+name: CI/CD
+on:
+  push:
+    branches:
+    - master
+    paths:
+    - "src_book/**"
+    - "book.toml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      uses: ./.github/actions/build
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        PUBLISH_BRANCH: book
+        PUBLISH_DIR: ./book
