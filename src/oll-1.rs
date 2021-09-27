@@ -1,3 +1,4 @@
+use lib::OLLEnumeration;
 use rubikmaster::cfop;
 use rubikmaster::matrix::{of, PermutationMatrix};
 use rubikmaster::{Command, Move::*};
@@ -122,7 +123,16 @@ fn main() {
         }
     }
     let mut file = File::create("out.json").unwrap();
-    let out = serde_json::to_string(&ans).unwrap();
+    let mut rotations = vec![];
+    for i in 0..n {
+        rotations.push(NOTE_TBL[i].to_string());
+    }
+    let out = OLLEnumeration {
+        rotations,
+        oll_n: n,
+        set: ans,
+    };
+    let out = serde_json::to_string(&out).unwrap();
     write!(file, "{}", out).unwrap();
     file.flush().unwrap();
 }

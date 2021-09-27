@@ -32,15 +32,14 @@ fn main() {
     let opt = Opts::parse();
     let file = File::open(opt.file).unwrap();
     let reader = BufReader::new(file);
-    let oll: Vec<String> = serde_json::from_reader(reader).unwrap();
-    dbg!(oll.len());
+    let oll: OLLEnumeration = serde_json::from_reader(reader).unwrap();
 
     // M -> [Seq]
     let mut oll_tbl = HashMap::new();
     oll_tbl.insert(PermutationMatrix::identity(), vec!["".to_owned()]);
 
     let s = Instant::now();
-    let oll: Vec<_> = oll.into_par_iter().map(|s| (parse(&s), s)).collect();
+    let oll: Vec<_> = oll.set.into_par_iter().map(|s| (parse(&s), s)).collect();
     println!("{:?}", s.elapsed());
 
     let s = Instant::now();

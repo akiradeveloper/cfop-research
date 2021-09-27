@@ -1,6 +1,13 @@
-use std::collections::HashMap;
+use std::collections::{HashSet, HashMap};
 
 pub type Id = u64;
+
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct OLLEnumeration {
+    pub rotations: Vec<String>,
+    pub oll_n: usize,
+    pub set: HashSet<String>,
+}
 
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct Analysis {
