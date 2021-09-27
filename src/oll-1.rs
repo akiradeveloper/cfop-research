@@ -9,6 +9,7 @@ use rayon::iter::ParallelIterator;
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::Write;
+use itertools::*;
 
 #[derive(Clap, Debug)]
 #[clap(name = "oll-1")]
@@ -17,6 +18,7 @@ struct Opts {
     n: usize,
 }
 
+const REP: usize = 9;
 const PAR_N: usize = 100000;
 const NOTE_TBL: [&str; 15] = [
     "", "R", "R'", "R2", "U", "U'", "U2", "F", "F'", "M'", "M2", "L", "L'", "D", "D'",
@@ -44,43 +46,21 @@ fn main() {
     mov_tbl[13] = cmd(D, 1);
     mov_tbl[14] = cmd(D, -1);
 
-    let func = |(x0, x1, x2, x3, x4, x5, x6, x7, x8): (
-        usize,
-        usize,
-        usize,
-        usize,
-        usize,
-        usize,
-        usize,
-        usize,
-        usize,
-    )| {
+    let func = |xs: Vec<usize>| {
         let mut m = PermutationMatrix::identity();
         let mut ap = |i| {
             let op = mov_tbl[i];
             m = op * m;
         };
-        ap(x0);
-        ap(x1);
-        ap(x2);
-        ap(x3);
-        ap(x4);
-        ap(x5);
-        ap(x6);
-        ap(x7);
-        ap(x8);
+        for i in 0..REP {
+            ap(xs[i]);
+        }
         let ok = cfop::f2l_solved(&m) && !cfop::solved(&m);
         if ok {
             let mut s = String::new();
-            s.push_str(NOTE_TBL[x0]);
-            s.push_str(NOTE_TBL[x1]);
-            s.push_str(NOTE_TBL[x2]);
-            s.push_str(NOTE_TBL[x3]);
-            s.push_str(NOTE_TBL[x4]);
-            s.push_str(NOTE_TBL[x5]);
-            s.push_str(NOTE_TBL[x6]);
-            s.push_str(NOTE_TBL[x7]);
-            s.push_str(NOTE_TBL[x8]);
+            for i in 0..REP {
+                s.push_str(NOTE_TBL[xs[i]]);
+            }
             Some(s)
         } else {
             None
@@ -93,23 +73,13 @@ fn main() {
     let mut done: u64 = 0;
     let n = opt.n;
     let mut xs = vec![];
-    for comb in itertools::iproduct!(0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n, 0..n) {
+    let last = vec![n-1; REP];
+    for comb in std::iter::repeat(0..n).take(REP).multi_cartesian_product() {
+        let is_last = comb == last;
         xs.push(comb);
 
         let cur_n = xs.len();
-        if cur_n == PAR_N
-            || comb
-                == (
-                    n - 1,
-                    n - 1,
-                    n - 1,
-                    n - 1,
-                    n - 1,
-                    n - 1,
-                    n - 1,
-                    n - 1,
-                    n - 1,
-                )
+        if cur_n == PAR_N || is_last
         {
             let it: Vec<_> = xs.into_par_iter().map(|a| func(a)).collect();
             for a in it {
